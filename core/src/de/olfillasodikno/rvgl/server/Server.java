@@ -220,6 +220,7 @@ public class Server implements Runnable {
 				e1.printStackTrace();
 			}
 		}
+		System.out.println("Have a nice day!");
 	}
 
 }
