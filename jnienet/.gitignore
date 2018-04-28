@@ -1,4 +1,4 @@
-/*
+.*
 !.gitignore
-!jnienet.cpp
-!jnienet.h
+!.jnienet.h
+!.jnienet.cpp
