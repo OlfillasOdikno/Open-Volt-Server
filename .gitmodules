@@ -1,6 +1,3 @@
-[submodule "plugins"]
-	path = plugins
-	url = https://github.com/OlfillasOdikno/Open-Volt-Server-Plugins.git
 [submodule "jnienet/enet"]
 	path = jnienet/enet
 	url = https://github.com/lsalzman/enet.git
