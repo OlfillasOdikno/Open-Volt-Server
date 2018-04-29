@@ -1,0 +1,8 @@
+{
+	"main": "de.olfillasodikno.autocountdown.AutoCountdown",
+	"name": "Auto Countdown",
+	"description": "automates the countdown",
+	"authors":["OlfillasOdikno"],
+	"version": "0.1",
+	"has_external_config":true
+}

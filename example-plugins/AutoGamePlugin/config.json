@@ -1,0 +1,24 @@
+{
+	"tracks": [
+		"nhood1",
+		"muse2",
+		"market1",
+		"market2",
+		"garden1",
+		"ship1",
+		"toy2",
+		"toylite",
+		"roof",
+		"wild_west2"
+	],
+	"timer_lobby": 60,
+	"timer_first": 120,
+	"timer_half": 60,
+	"timer_last": 30,
+	"timer_all": 15,
+	"max_players": 8,
+	"min_players":2,
+	"laps":3,
+	"difficulty":3,
+	"pickups":true
+}

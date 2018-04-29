@@ -1,0 +1,9 @@
+{
+	"main": "de.olfillasodikno.testplugin.TestPlugin",
+	"name": "Test Plugin",
+	"description": "Just a test..",
+	"authors":["OlfillasOdikno"],
+	"version": "0.1",
+	"has_external_config":true,
+	"test": "HALLO"
+}

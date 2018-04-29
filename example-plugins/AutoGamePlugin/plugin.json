@@ -1,0 +1,8 @@
+{
+	"main": "de.olfillasodikno.autoplugin.AutoGame",
+	"name": "Auto Game",
+	"description": "Automates the games!",
+	"authors":["OlfillasOdikno"],
+	"version": "0.1",
+	"has_external_config":true
+}
