@@ -169,6 +169,7 @@ public class FileManager {
 			}
 			return false;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
 		return false;

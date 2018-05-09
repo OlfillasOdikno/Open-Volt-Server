@@ -36,37 +36,36 @@ public class AutoGame extends Plugin {
 	private int timer_last;
 	private int timer_all;
 
-	
 	private int min_players;
 	private int max_players;
 
 	private int laps;
 	private int difficulty;
-	
+
 	private boolean pickups;
 
 	@Override
 	public void onEnable() {
 		lrestart = new HashMap<>();
 		rnd = new Random();
-		tracknames = getPluginConfig().gson.fromJson(getPluginConfig().externalConfig.getAsJsonObject().get("tracks"),
-				String[].class);
-		
-		timer_lobby = getPluginConfig().externalConfig.getAsJsonObject().get("timer_lobby").getAsInt();
+		tracknames = getPluginConfig().getGson()
+				.fromJson(getPluginConfig().getExternalConfig().getAsJsonObject().get("tracks"), String[].class);
 
-		timer_first = getPluginConfig().externalConfig.getAsJsonObject().get("timer_first").getAsInt();
-		timer_half = getPluginConfig().externalConfig.getAsJsonObject().get("timer_half").getAsInt();
-		timer_last = getPluginConfig().externalConfig.getAsJsonObject().get("timer_last").getAsInt();
-		timer_all = getPluginConfig().externalConfig.getAsJsonObject().get("timer_all").getAsInt();
-		
-		min_players = getPluginConfig().externalConfig.getAsJsonObject().get("min_players").getAsInt();
-		max_players = getPluginConfig().externalConfig.getAsJsonObject().get("max_players").getAsInt();
-		
-		laps = getPluginConfig().externalConfig.getAsJsonObject().get("laps").getAsInt();
-		difficulty = getPluginConfig().externalConfig.getAsJsonObject().get("difficulty").getAsInt();
-		
-		pickups = getPluginConfig().externalConfig.getAsJsonObject().get("pickups").getAsBoolean();
-		
+		timer_lobby = getPluginConfig().getExternalConfig().getAsJsonObject().get("timer_lobby").getAsInt();
+
+		timer_first = getPluginConfig().getExternalConfig().getAsJsonObject().get("timer_first").getAsInt();
+		timer_half = getPluginConfig().getExternalConfig().getAsJsonObject().get("timer_half").getAsInt();
+		timer_last = getPluginConfig().getExternalConfig().getAsJsonObject().get("timer_last").getAsInt();
+		timer_all = getPluginConfig().getExternalConfig().getAsJsonObject().get("timer_all").getAsInt();
+
+		min_players = getPluginConfig().getExternalConfig().getAsJsonObject().get("min_players").getAsInt();
+		max_players = getPluginConfig().getExternalConfig().getAsJsonObject().get("max_players").getAsInt();
+
+		laps = getPluginConfig().getExternalConfig().getAsJsonObject().get("laps").getAsInt();
+		difficulty = getPluginConfig().getExternalConfig().getAsJsonObject().get("difficulty").getAsInt();
+
+		pickups = getPluginConfig().getExternalConfig().getAsJsonObject().get("pickups").getAsBoolean();
+
 		newLobby();
 		lobbyTimer = new LobbyTimer(this);
 		Thread lobbyThread = new Thread(lobbyTimer);
@@ -136,7 +135,7 @@ public class AutoGame extends Plugin {
 
 	private void newLobby() {
 		current = new Lobby(getServer());
-		current.getSettings().setNum_cars((byte) max_players);
+		current.getSettings().setNumCars((byte) max_players);
 		current.setPrivateLobby(true);
 		String track = tracknames[rnd.nextInt(tracknames.length)];
 		current.getSettings().setTrackname(track.getBytes());

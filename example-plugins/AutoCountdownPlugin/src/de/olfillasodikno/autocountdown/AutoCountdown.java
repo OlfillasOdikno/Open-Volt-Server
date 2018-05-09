@@ -15,7 +15,7 @@ public class AutoCountdown extends Plugin {
 
 	@Override
 	public void onEnable() {
-		time = getPluginConfig().externalConfig.getAsJsonObject().get("time").getAsInt();
+		time = getPluginConfig().getExternalConfig().getAsJsonObject().get("time").getAsInt();
 	}
 
 	@Override

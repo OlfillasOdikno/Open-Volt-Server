@@ -7,7 +7,7 @@ public class TestPlugin extends Plugin{
 	@Override
 	public void onEnable() {
 		log("Config: ");
-		log(getPluginConfig().externalConfig.toString());
+		log("{0}",getPluginConfig().getExternalConfig().toString());
 	}
 
 	@Override

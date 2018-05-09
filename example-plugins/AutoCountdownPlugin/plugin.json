@@ -4,5 +4,5 @@
 	"description": "automates the countdown",
 	"authors":["OlfillasOdikno"],
 	"version": "0.1",
-	"has_external_config":true
+	"hasExternalConfig":true
 }

@@ -4,5 +4,5 @@
 	"description": "Automates the games!",
 	"authors":["OlfillasOdikno"],
 	"version": "0.1",
-	"has_external_config":true
+	"hasExternalConfig":true
 }
