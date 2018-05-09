@@ -1,6 +1,8 @@
 package de.olfillasodikno.rvgl.server.utils;
 
 public class ByteUtils {
+	
+	private ByteUtils() {}
 
 	public static String bytesToHex(byte[] bytes) {
 		StringBuilder sb = new StringBuilder();

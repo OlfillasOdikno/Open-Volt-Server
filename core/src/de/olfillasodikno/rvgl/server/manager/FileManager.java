@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,10 +32,11 @@ import de.olfillasodikno.rvgl.server.structures.PluginConfig;
 import de.olfillasodikno.rvgl.server.structures.Settings;
 
 public class FileManager {
+	private static final Logger logger = Logger.getLogger(FileManager.class.getName());
 
-	public static Gson gson = new Gson();
-	public static Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-	public static JsonParser jsonParser = new JsonParser();
+	public static final Gson gson = new Gson();
+	public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+	public static final JsonParser jsonParser = new JsonParser();
 
 	public final File dataDir = new File("data");
 
@@ -50,9 +53,7 @@ public class FileManager {
 			dataDir.mkdirs();
 		}
 
-		if (!settings.exists()) {
-			saveSettings();
-		} else if (!loadSettings()) {
+		if (!settings.exists() || !loadSettings()) {
 			saveSettings();
 		}
 
@@ -60,9 +61,9 @@ public class FileManager {
 	}
 
 	private void loadPlugins() {
-		server.log("Loading External Plugins..");
+		logger.info("Loading External Plugins..");
 		Settings serverSettings = server.getSettings();
-		File pluginDir = new File(serverSettings.pluginDir);
+		File pluginDir = new File(serverSettings.getPluginDir());
 		if (!pluginDir.exists()) {
 			pluginDir.mkdirs();
 		}
@@ -79,34 +80,34 @@ public class FileManager {
 					PluginConfig config = loadConfig(jarFile, plguinConfig, pluginDir, buf, file);
 					boolean ret = loadPlugin(config, jarFile, file);
 					if (!ret) {
-						server.error("Failed to load Plugin: " + file.getName());
+						logger.log(Level.SEVERE,"Failed to load Plugin: {0}", file.getName());
 					}
 				}
 				jarFile.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE,e.getMessage(), e.getCause());
 			}
 
 		}
-		server.log("Finished Loading External Plugins!");
+		logger.info("Finished Loading External Plugins!");
 	}
 
 	public PluginConfig reloadConfig(PluginConfig config) {
 		byte[] buf = new byte[1024];
 
 		Settings serverSettings = server.getSettings();
-		File pluginDir = new File(serverSettings.pluginDir);
+		File pluginDir = new File(serverSettings.getPluginDir());
 		try {
-			JarFile jarFile = new JarFile(config.source);
+			JarFile jarFile = new JarFile(config.getSource());
 			JarEntry plguinConfig = jarFile.getJarEntry(Constants.PLUGIN_CONFIG_FILE);
 			if (plguinConfig != null) {
-				config = loadConfig(jarFile, plguinConfig, pluginDir, buf, config.source);
+				config = loadConfig(jarFile, plguinConfig, pluginDir, buf, config.getSource());
 				jarFile.close();
-				return config; 
+				return config;
 			}
 			jarFile.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
 		}
 		return null;
 	}
@@ -117,9 +118,9 @@ public class FileManager {
 				new BufferedReader(new InputStreamReader(jarFile.getInputStream(plguinConfig))));
 		JsonElement element = jsonParser.parse(load);
 		PluginConfig config = prettyGson.fromJson(element, PluginConfig.class);
-		config.source = jar;
-		if (config.has_external_config) {
-			File configDir = new File(pluginDir, config.name);
+		config.setSource(jar);
+		if (config.isHasExternalConfig()) {
+			File configDir = new File(pluginDir, config.getName());
 			if (!configDir.exists()) {
 				configDir.mkdirs();
 			}
@@ -138,15 +139,16 @@ public class FileManager {
 			JsonReader externLoad = new JsonReader(
 					new BufferedReader(new InputStreamReader(new FileInputStream(configFile))));
 			JsonElement externalElement = jsonParser.parse(externLoad);
-			config.externalConfig = externalElement;
+			config.setExternalConfig(externalElement);
 		}
-		config.gson = prettyGson;
-		config.json = element;
+		config.setGson(prettyGson);
+		config.setJson(element);
 		return config;
 	}
 
 	public boolean loadPlugin(PluginConfig config, JarFile jarFile, File file) {
-		try {
+		try (URLClassLoader loader = new URLClassLoader(new URL[] { file.toURI().toURL() },
+				this.getClass().getClassLoader());) {
 			ArrayList<String> classes = new ArrayList<>();
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
@@ -155,51 +157,39 @@ public class FileManager {
 					classes.add(je.getName().split(".class")[0].replaceAll("/", "."));
 				}
 			}
-			URLClassLoader loader = new URLClassLoader(new URL[] { file.toURI().toURL() },
-					this.getClass().getClassLoader());
-			try {
-				Class<?> main = loader.loadClass(config.main);
-				if (Plugin.class.isAssignableFrom(main)) {
-					Class<? extends Plugin> plugin = main.asSubclass(Plugin.class);
-					server.getPluginManager().registerPlugin(plugin, config);
-					loader.close();
-					return true;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			Class<?> main = loader.loadClass(config.getMain());
+			if (Plugin.class.isAssignableFrom(main)) {
+				Class<? extends Plugin> plugin = main.asSubclass(Plugin.class);
+				server.getPluginManager().registerPlugin(plugin, config);
+				return true;
 			}
-			loader.close();
 			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
 		}
 		return false;
 	}
 
 	private boolean loadSettings() {
-		try {
-			JsonReader load = new JsonReader(new BufferedReader(new FileReader(settings)));
-			Settings settings = prettyGson.fromJson(load, Settings.class);
-			if (settings.hash != settings.hash()) {
-				load.close();
+		try (JsonReader load = new JsonReader(new BufferedReader(new FileReader(settings)))) {
+			Settings loadedSettings = prettyGson.fromJson(load, Settings.class);
+			if (loadedSettings.getHash() != loadedSettings.hash()) {
 				return false;
 			}
-			server.setSettings(settings);
+			server.setSettings(loadedSettings);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
 			return false;
 		}
 	}
 
 	private void saveSettings() {
-		try {
-			PrintWriter save = new PrintWriter(new FileWriter(settings));
-			Settings settings = server.getSettings();
-			save.println(prettyGson.toJson(settings));
-			save.close();
+		try (PrintWriter save = new PrintWriter(new FileWriter(settings))) {
+			Settings savedSettings = server.getSettings();
+			save.println(prettyGson.toJson(savedSettings));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
 		}
 	}
 }

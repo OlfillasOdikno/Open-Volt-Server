@@ -27,7 +27,7 @@ public class PacketPlayerAdddress implements Packet{
 
 	@Override
 	public void decode(ByteBuffer buf) {
-		byte[] addr = new byte[8];
+		addr = new byte[8];
 		id = buf.getInt();
 		buf.get(addr);
 	}

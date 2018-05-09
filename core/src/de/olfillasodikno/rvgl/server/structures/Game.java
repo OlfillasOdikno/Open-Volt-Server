@@ -1,8 +1,9 @@
 package de.olfillasodikno.rvgl.server.structures;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.olfillasodikno.libenet.Enet;
 import de.olfillasodikno.rvgl.server.network.packets.PacketIngameData;
@@ -15,7 +16,7 @@ public class Game {
 
 	private int numPlayers;
 
-	private HashMap<Player, GamePlayerData> playerData;
+	private Map<Player, GamePlayerData> playerData;
 
 	private int lastCarID;
 
@@ -62,7 +63,7 @@ public class Game {
 		return restarts;
 	}
 
-	public HashMap<Player, GamePlayerData> getPlayerData() {
+	public Map<Player, GamePlayerData> getPlayerData() {
 		return playerData;
 	}
 
@@ -112,7 +113,7 @@ public class Game {
 	}
 
 	public void updateGameObjects(PacketIngameData pkt, Player sender) {
-		ArrayList<IngameObject> objects = pkt.getObjects();
+		List<IngameObject> objects = pkt.getObjects();
 
 		PacketIngameData pkt2 = new PacketIngameData(objects);
 		

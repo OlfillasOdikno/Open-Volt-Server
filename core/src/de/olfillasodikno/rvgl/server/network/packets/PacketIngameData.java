@@ -2,6 +2,7 @@ package de.olfillasodikno.rvgl.server.network.packets;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.olfillasodikno.rvgl.server.structures.Packet;
 import de.olfillasodikno.rvgl.server.structures.ingame.IngameObject;
@@ -10,12 +11,12 @@ public class PacketIngameData implements Packet {
 
 	private short subID;
 
-	private ArrayList<IngameObject> objects;
+	private List<IngameObject> objects;
 
 	public PacketIngameData() {
 	}
 	
-	public PacketIngameData(ArrayList<IngameObject> objects) {
+	public PacketIngameData(List<IngameObject> objects) {
 		this.objects = objects;
 		this.subID = (short) objects.size();
 	}
@@ -30,7 +31,7 @@ public class PacketIngameData implements Packet {
 		return subID;
 	}
 	
-	public ArrayList<IngameObject> getObjects() {
+	public List<IngameObject> getObjects() {
 		return objects;
 	}
 

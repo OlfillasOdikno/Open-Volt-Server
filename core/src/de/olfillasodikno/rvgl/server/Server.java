@@ -3,6 +3,8 @@ package de.olfillasodikno.rvgl.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.olfillasodikno.libenet.Enet;
 import de.olfillasodikno.libenet.EnetEvent;
@@ -24,7 +26,7 @@ import de.olfillasodikno.rvgl.server.structures.Settings;
 
 public class Server implements Runnable {
 
-	private long lastMS;
+	private static final Logger logger = Logger.getLogger(Server.class.getName());
 
 	private DataHandler<EnetEvent, byte[], Packet> handler;
 
@@ -35,7 +37,7 @@ public class Server implements Runnable {
 
 	private long startMs;
 
-	private EnetInstance enet_server;
+	private EnetInstance enetServer;
 
 	private PlayerManager playerManager;
 	private EventHandler eventHandler;
@@ -68,11 +70,11 @@ public class Server implements Runnable {
 	private void init() {
 		registerPlugins();
 		fileManager.init();
-		this.port = settings.port;
+		this.port = settings.getPort();
 	}
 
 	public void create() {
-		enet_server = Enet.createServer(port);
+		enetServer = Enet.createServer(port);
 	}
 
 	@Override
@@ -82,38 +84,33 @@ public class Server implements Runnable {
 		if (handler == null) {
 			return;
 		}
-		if (enet_server == null) {
+		if (enetServer == null) {
 			return;
 		}
 		log("Starting server..");
 		startMs = System.nanoTime();
 		while (running) {
-			ev = Enet.service(enet_server);
+			ev = Enet.service(enetServer);
 			if (ev == null || ev.getData() == null) {
 				continue;
 			}
 			try {
 				handler.decode(ev, true);
 			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
+				logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 			}
 		}
-		Enet.destroyServer(enet_server);
+		Enet.destroyServer(enetServer);
 		Enet.clean();
 		down = true;
 		log("Server down!");
 	}
 
 	public long getLastNS() {
-		lastMS = System.nanoTime();
-		return lastMS - startMs;
+		return System.nanoTime() - startMs;
 	}
 
 	public void sendPacket(Peer peer, Packet pkt) {
-		sendPacket(peer, pkt, true);
-	}
-
-	public void sendPacket(Peer peer, Packet pkt, boolean flush) {
 		byte[] data = handler.encode(pkt);
 		long h = Enet.enet_packet_create(data, data.length, 1);
 		Enet.enet_peer_send(peer.getHandle(), (char) 0, h);
@@ -135,8 +132,8 @@ public class Server implements Runnable {
 		this.running = running;
 	}
 
-	public EnetInstance getEnet_server() {
-		return enet_server;
+	public EnetInstance getEnetServer() {
+		return enetServer;
 	}
 
 	public PlayerManager getPlayerManager() {
@@ -158,7 +155,7 @@ public class Server implements Runnable {
 	public Settings getSettings() {
 		return settings;
 	}
-	
+
 	public FileManager getFileManager() {
 		return fileManager;
 	}
@@ -177,16 +174,16 @@ public class Server implements Runnable {
 			pluginManager.registerPlugin(ReloadPlugin.class);
 			pluginManager.registerPlugin(OpPlugin.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
 	}
-	
+
 	public void log(String msg) {
-		System.out.println("[Server] "+msg);
+		logger.log(Level.INFO, "[Server] {0}", msg);
 	}
-	
+
 	public void error(String msg) {
-		System.err.println("[Server] "+msg);
+		logger.log(Level.SEVERE, "[Server] {0}", msg);
 	}
 
 	public static void main(String[] args) {
@@ -204,7 +201,7 @@ public class Server implements Runnable {
 					try {
 						Thread.sleep(100L);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 					}
 				}
 				String cmd = br.readLine();
@@ -217,10 +214,10 @@ public class Server implements Runnable {
 					new ServerCommandEvent(cmd).fire();
 				}
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.log(Level.SEVERE, e1.getMessage(), e1.getCause());
 			}
 		}
-		System.out.println("Have a nice day!");
+		logger.info("Have a nice day!");
 	}
 
 }

@@ -9,7 +9,7 @@ public class PacketGameSettings implements Packet {
 
 	private byte mode;
 	private byte difficulty;
-	private byte num_cars;
+	private byte numCars;
 	private byte limit;
 	private byte[] trackname;
 
@@ -26,7 +26,7 @@ public class PacketGameSettings implements Packet {
 	public PacketGameSettings(GameSettings settings) {
 		this.mode = settings.getMode();
 		this.difficulty = settings.getDifficulty();
-		this.num_cars = settings.getNum_cars();
+		this.numCars = settings.getNumCars();
 		this.limit = settings.getLimit();
 		this.trackname = settings.getTrackname();
 		this.r = settings.isR();
@@ -40,7 +40,7 @@ public class PacketGameSettings implements Packet {
 	public void encode(ByteBuffer buf) {
 		buf.put(mode);
 		buf.put(difficulty);
-		buf.put(num_cars);
+		buf.put(numCars);
 		buf.put(limit);
 		buf.put(trackname, 0, 16);
 		buf.put((byte) (r ? 1 : 0));
@@ -71,12 +71,13 @@ public class PacketGameSettings implements Packet {
 		this.difficulty = difficulty;
 	}
 
-	public byte getNum_cars() {
-		return num_cars;
+	
+	public byte getNumCars() {
+		return numCars;
 	}
 
-	public void setNum_cars(byte num_cars) {
-		this.num_cars = num_cars;
+	public void setNumCars(byte numCars) {
+		this.numCars = numCars;
 	}
 
 	public byte getLimit() {

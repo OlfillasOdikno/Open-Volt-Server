@@ -16,7 +16,7 @@ public abstract class IngameObject {
 
 	private int length;
 	private short type;
-	private short sub_type;
+	private short subType;
 
 	public void encode(ByteBuffer buf) {
 		encodeHead(buf);
@@ -28,7 +28,7 @@ public abstract class IngameObject {
 	public void encodeHead(ByteBuffer buf) {
 		buf.putInt(length);
 		buf.putShort(type);
-		buf.putShort(sub_type);
+		buf.putShort(subType);
 	}
 
 	public static IngameObject decode(ByteBuffer buf) {
@@ -43,7 +43,7 @@ public abstract class IngameObject {
 			return null;
 		}
 		short type = buf.getShort();
-		short sub_type = buf.getShort();
+		short subType = buf.getShort();
 		IngameObject obj;
 		if (!map.containsKey(type)) {
 			if(Constants.DEV) {
@@ -52,7 +52,7 @@ public abstract class IngameObject {
 
 			obj = new IngameUnknownObject(length);
 			obj.type = type;
-			obj.sub_type = sub_type;
+			obj.subType = subType;
 			obj.length = length;
 			obj.decodeBody(buf);
 			return obj;
@@ -65,7 +65,7 @@ public abstract class IngameObject {
 			return null;
 		}
 		obj.type = type;
-		obj.sub_type = sub_type;
+		obj.subType = subType;
 		obj.length = length;
 		obj.decodeBody(buf);
 		return obj;
@@ -75,10 +75,10 @@ public abstract class IngameObject {
 		return type;
 	}
 
-	public short getSub_type() {
-		return sub_type;
+	public short getSubType() {
+		return subType;
 	}
-
+	
 	public abstract void decodeBody(ByteBuffer buf);
 
 }

@@ -203,112 +203,100 @@ public class PacketHandler implements DataHandler<EnetEvent, byte[], Packet> {
 				server.getLobbyManager().getHub().addPlayer(player, true);
 			}
 			new PlayerJoinEvent(player).fire();
-		} else if (obj instanceof PacketPlayerData) {
-			if (player != null) {
-				PacketPlayerData playerDataPkt = (PacketPlayerData) obj;
+		}
+		if (player == null) {
+			return;
+		}
+		if (obj instanceof PacketPlayerData) {
+			PacketPlayerData playerDataPkt = (PacketPlayerData) obj;
 
-				Player.Data playerData = player.getData();
-				playerData.setPlayername(playerDataPkt.getPlayername());
-				playerData.setCheat(playerDataPkt.isCheat());
+			Player.Data playerData = player.getData();
+			playerData.setPlayername(playerDataPkt.getPlayername());
+			playerData.setCheat(playerDataPkt.isCheat());
 
-				CarData carData = playerData.getCarData();
-				carData.setCarname(playerDataPkt.getCarname());
-				carData.setCrc(playerDataPkt.getCrc());
+			CarData carData = playerData.getCarData();
+			carData.setCarname(playerDataPkt.getCarname());
+			carData.setCrc(playerDataPkt.getCrc());
 
-				playerDataPkt.setId(player.getId());
+			playerDataPkt.setId(player.getId());
 
-				player.getCurrentLobby().broadcast(playerDataPkt);
-			}
+			player.getCurrentLobby().broadcast(playerDataPkt);
 
 		} else if (obj instanceof PacketPlayerReady) {
-			if (player != null) {
-				PacketPlayerReady playerReadyPkt = (PacketPlayerReady) obj;
-				playerReadyPkt.setId(player.getId());
+			PacketPlayerReady playerReadyPkt = (PacketPlayerReady) obj;
+			playerReadyPkt.setId(player.getId());
 
-				player.getData().setReady(playerReadyPkt.isReady());
-				player.getData().setReady(playerReadyPkt.isSpectator());
+			player.getData().setReady(playerReadyPkt.isReady());
+			player.getData().setReady(playerReadyPkt.isSpectator());
 
-				PlayerReadyEvent rev = new PlayerReadyEvent(player);
-				rev.fire();
+			PlayerReadyEvent rev = new PlayerReadyEvent(player);
+			rev.fire();
 
-				player.getCurrentLobby().broadcast(playerReadyPkt);
-			}
+			player.getCurrentLobby().broadcast(playerReadyPkt);
+
 		} else if (obj instanceof PacketPlayerChat) {
-			if (player != null) {
-				PacketPlayerChat playerChatPkt = (PacketPlayerChat) obj;
-				playerChatPkt.setId(player.getId());
-				String[] dat = playerChatPkt.getMsg().split(": ", 2);
-				if (dat.length == 2 && dat[1].startsWith("#")) {
-					server.getPluginManager().parseHandleCmd(dat[1], player);
-				} else {
-					player.getCurrentLobby().broadcast(playerChatPkt, player, true);
-				}
+			PacketPlayerChat playerChatPkt = (PacketPlayerChat) obj;
+			playerChatPkt.setId(player.getId());
+			String[] dat = playerChatPkt.getMsg().split(": ", 2);
+			if (dat.length == 2 && dat[1].startsWith("#")) {
+				server.getPluginManager().parseHandleCmd(dat[1], player);
+			} else {
+				player.getCurrentLobby().broadcast(playerChatPkt, player, true);
 			}
+
 		} else if (obj instanceof PacketSync) {
-			if (player != null) {
-				PacketSync syncPkt = (PacketSync) obj;
+			PacketSync syncPkt = (PacketSync) obj;
 
-				PacketSyncReply replPkt = new PacketSyncReply();
-				replPkt.setCountA(syncPkt.getCount());
-				replPkt.setCountB(server.getLastNS());
-				player.sendPacket(replPkt);
-			}
+			PacketSyncReply replPkt = new PacketSyncReply();
+			replPkt.setCountA(syncPkt.getCount());
+			replPkt.setCountB(server.getLastNS());
+			player.sendPacket(replPkt);
+
 		} else if (obj instanceof PacketIngameData) {
-			if (player != null) {
-				PacketIngameData pkt = (PacketIngameData) obj;
-				Game game = player.getCurrentLobby().getGame();
-				game.updateGameObjects(pkt, player);
-			}
-		} else if (obj instanceof PacketGameLoaded) {
-			if (player != null) {
-				// PacketGameLoaded pkt = (PacketGameLoaded) obj;
-				Game game = player.getCurrentLobby().getGame();
-				GamePlayerData data = game.getPlayerData().get(player);
-				if (data != null) {
-					data.setLoaded(true);
-				}
-			}
-		} else if (obj instanceof PacketGameFinish) {
-			if (player != null) {
-				PacketGameFinish pkt = (PacketGameFinish) obj;
-				pkt.setId(player.getId());
-				player.getCurrentLobby().broadcast(pkt);
-				Game game = player.getCurrentLobby().getGame();
-				GamePlayerData data = game.getPlayerData().get(player);
-				data.setFinished(true);
-				new PlayerFinishEvent(player).fire();
-			}
-		} else if (obj instanceof PacketItemUse) {
-			if (player != null) {
-				PacketItemUse pkt = (PacketItemUse) obj;
-				player.getCurrentLobby().broadcast(pkt);
+			PacketIngameData pkt = (PacketIngameData) obj;
+			Game game = player.getCurrentLobby().getGame();
+			game.updateGameObjects(pkt, player);
 
+		} else if (obj instanceof PacketGameLoaded) {
+			// PacketGameLoaded pkt = (PacketGameLoaded) obj;
+			Game game = player.getCurrentLobby().getGame();
+			GamePlayerData data = game.getPlayerData().get(player);
+			if (data != null) {
+				data.setLoaded(true);
 			}
+
+		} else if (obj instanceof PacketGameFinish) {
+			PacketGameFinish pkt = (PacketGameFinish) obj;
+			pkt.setId(player.getId());
+			player.getCurrentLobby().broadcast(pkt);
+			Game game = player.getCurrentLobby().getGame();
+			GamePlayerData data = game.getPlayerData().get(player);
+			data.setFinished(true);
+			new PlayerFinishEvent(player).fire();
+
+		} else if (obj instanceof PacketItemUse) {
+			PacketItemUse pkt = (PacketItemUse) obj;
+			player.getCurrentLobby().broadcast(pkt);
+
 		} else if (obj instanceof PacketItemSlot) {
-			if (player != null) {
-				PacketItemSlot pkt = (PacketItemSlot) obj;
-				player.getCurrentLobby().broadcast(pkt);
-			}
+			PacketItemSlot pkt = (PacketItemSlot) obj;
+			player.getCurrentLobby().broadcast(pkt);
+
 		} else if (obj instanceof PacketStarGet) {
-			if (player != null) {
-				PacketStarGet pkt = (PacketStarGet) obj;
-				player.getCurrentLobby().broadcast(pkt);
-			}
+			PacketStarGet pkt = (PacketStarGet) obj;
+			player.getCurrentLobby().broadcast(pkt);
+
 		} else if (obj instanceof PacketStarUse) {
-			if (player != null) {
-				PacketStarUse pkt = (PacketStarUse) obj;
-				player.getCurrentLobby().broadcast(pkt);
-			}
+			PacketStarUse pkt = (PacketStarUse) obj;
+			player.getCurrentLobby().broadcast(pkt);
+
 		} else if (obj instanceof PacketGameBomb) {
-			if (player != null) {
-				PacketGameBomb pkt = (PacketGameBomb) obj;
-				player.getCurrentLobby().broadcast(pkt);
-			}
+			PacketGameBomb pkt = (PacketGameBomb) obj;
+			player.getCurrentLobby().broadcast(pkt);
+
 		} else if (obj instanceof PacketPlayerDisconnect) {
-			if (player != null) {
-				player.getCurrentLobby().removePlayer(player);
-				new PlayerDisconnectEvent(player).fire();
-			}
+			player.getCurrentLobby().removePlayer(player);
+			new PlayerDisconnectEvent(player).fire();
 		}
 		new PostPacketEvent(obj, player).fire();
 	}

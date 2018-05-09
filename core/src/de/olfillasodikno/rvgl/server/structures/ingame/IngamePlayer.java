@@ -16,9 +16,9 @@ public class IngamePlayer extends IngameObject{
 	private byte roll;
 	private byte unknownRot;
 
-	private byte vk_up_down;
-	private byte vk_left_right;
-	private byte vk_special;
+	private byte vkUpDown;
+	private byte vkLeftRight;
+	private byte vkSpecial;
 
 	private int count;
 
@@ -44,9 +44,9 @@ public class IngamePlayer extends IngameObject{
 		buf.put(roll);
 		buf.put(unknownRot);
 
-		buf.put(vk_left_right);
-		buf.put(vk_up_down);
-		buf.put(vk_special);
+		buf.put(vkLeftRight);
+		buf.put(vkUpDown);
+		buf.put(vkSpecial);
 		buf.put((byte) 0);
 
 		buf.putInt(count);
@@ -75,9 +75,9 @@ public class IngamePlayer extends IngameObject{
 		roll = buf.get();
 		unknownRot = buf.get();
 		
-		vk_left_right = buf.get();
-		vk_up_down = buf.get();
-		vk_special = buf.get();
+		vkLeftRight = buf.get();
+		vkUpDown = buf.get();
+		vkSpecial = buf.get();
 		buf.get();
 
 		count = buf.getInt();
@@ -140,30 +140,6 @@ public class IngamePlayer extends IngameObject{
 
 	public void setUnknownRot(byte unknownRot) {
 		this.unknownRot = unknownRot;
-	}
-
-	public byte getVk_up_down() {
-		return vk_up_down;
-	}
-
-	public void setVk_up_down(byte vk_up_down) {
-		this.vk_up_down = vk_up_down;
-	}
-
-	public byte getVk_left_right() {
-		return vk_left_right;
-	}
-
-	public void setVk_left_right(byte vk_left_right) {
-		this.vk_left_right = vk_left_right;
-	}
-
-	public byte getVk_special() {
-		return vk_special;
-	}
-
-	public void setVk_special(byte vk_special) {
-		this.vk_special = vk_special;
 	}
 
 	public int getCount() {

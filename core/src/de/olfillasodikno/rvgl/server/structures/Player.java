@@ -1,6 +1,7 @@
 package de.olfillasodikno.rvgl.server.structures;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.olfillasodikno.libenet.Peer;
 import de.olfillasodikno.rvgl.server.Server;
@@ -15,7 +16,7 @@ public class Player {
 
 	private Lobby currentLobby;
 
-	private final ArrayList<String> permissions;
+	private final List<String> permissions;
 
 	public Player(int id, Server server) {
 		this.server = server;
@@ -24,7 +25,7 @@ public class Player {
 		permissions = new ArrayList<>();
 	}
 
-	public ArrayList<String> getPermissions() {
+	public List<String> getPermissions() {
 		return permissions;
 	}
 
@@ -58,11 +59,7 @@ public class Player {
 	}
 
 	public void sendPacket(Packet pkt) {
-		sendPacket(pkt, true);
-	}
-
-	public void sendPacket(Packet pkt, boolean flush) {
-		server.sendPacket(getPeer(), pkt, flush);
+		server.sendPacket(getPeer(), pkt);
 	}
 
 	public Lobby getCurrentLobby() {
@@ -92,7 +89,7 @@ public class Player {
 					lastWhite = Math.min(line.length() - 1, 59);
 				}
 				line = line.substring(0, lastWhite).trim();
-				if (line.equals("")) {
+				if (line.isEmpty()) {
 					break;
 				}
 				lines.add(line);

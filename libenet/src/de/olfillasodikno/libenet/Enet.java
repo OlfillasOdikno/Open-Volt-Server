@@ -7,6 +7,8 @@ public class Enet {
 		enet_initialize();
 	}
 	
+	private Enet() {}
+	
 	public static EnetInstance createClient() {
 		long handle = enet_host_create("", (short)0, 1, 2, 57600 / 8, 14400 / 8);
 		return new EnetInstance(handle);

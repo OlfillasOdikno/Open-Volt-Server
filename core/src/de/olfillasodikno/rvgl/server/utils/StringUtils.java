@@ -8,6 +8,8 @@ public class StringUtils {
 	
 	private static final String symbols = "ABCDEFGHKPWXY23478";
 	
+	private StringUtils() {}
+	
 	public static String random(int length) {
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i< length; i++) {

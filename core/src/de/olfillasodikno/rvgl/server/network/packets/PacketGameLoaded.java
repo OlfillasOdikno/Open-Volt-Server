@@ -7,8 +7,8 @@ import de.olfillasodikno.rvgl.server.structures.Packet;
 public class PacketGameLoaded implements Packet{
 	
 	private int restartCount;
-	private int car_checksum;
-	private int level_checksum;
+	private int carChecksum;
+	private int levelChecksum;
 	private int unknown;
 	
 	public PacketGameLoaded() {}
@@ -17,8 +17,8 @@ public class PacketGameLoaded implements Packet{
 	public void encode(ByteBuffer buf) {
 		
 		buf.putInt(restartCount);
-		buf.putInt(car_checksum);
-		buf.putInt(level_checksum);
+		buf.putInt(carChecksum);
+		buf.putInt(levelChecksum);
 		buf.putInt(unknown);
 
 	}
@@ -26,8 +26,8 @@ public class PacketGameLoaded implements Packet{
 	@Override
 	public void decode(ByteBuffer buf) {
 		restartCount = buf.getInt();
-		car_checksum = buf.getInt();
-		level_checksum = buf.getInt();
+		carChecksum = buf.getInt();
+		levelChecksum = buf.getInt();
 		unknown = buf.getInt();
 	}
 
@@ -35,24 +35,24 @@ public class PacketGameLoaded implements Packet{
 		return restartCount;
 	}
 
+	public int getCarChecksum() {
+		return carChecksum;
+	}
+
+	public void setCarChecksum(int carChecksum) {
+		this.carChecksum = carChecksum;
+	}
+
+	public int getLevelChecksum() {
+		return levelChecksum;
+	}
+
+	public void setLevelChecksum(int levelChecksum) {
+		this.levelChecksum = levelChecksum;
+	}
+
 	public void setRestartCount(int restartCount) {
 		this.restartCount = restartCount;
-	}
-
-	public int getCar_checksum() {
-		return car_checksum;
-	}
-
-	public void setCar_checksum(int car_checksum) {
-		this.car_checksum = car_checksum;
-	}
-
-	public int getLevel_checksum() {
-		return level_checksum;
-	}
-
-	public void setLevel_checksum(int level_checksum) {
-		this.level_checksum = level_checksum;
 	}
 
 	public int getUnknown() {

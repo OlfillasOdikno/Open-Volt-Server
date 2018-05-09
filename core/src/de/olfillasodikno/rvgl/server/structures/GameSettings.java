@@ -6,10 +6,10 @@ public class GameSettings {
 
 	private byte mode;
 	private byte difficulty;
-	private byte num_cars;
+	private byte numCars;
 	private byte limit;
 	private byte[] trackname;
-	
+
 	private boolean r;
 	private boolean s;
 
@@ -20,9 +20,9 @@ public class GameSettings {
 	public GameSettings() {
 		trackname = new byte[16];
 		setTrackname("nhood1".getBytes());
-		setNum_cars((byte) 8);
-		setMode((byte)4);
-		setLimit((byte)3);
+		setNumCars((byte) 8);
+		setMode((byte) 4);
+		setLimit((byte) 3);
 		setPickups(true);
 	}
 
@@ -42,12 +42,12 @@ public class GameSettings {
 		this.difficulty = difficulty;
 	}
 
-	public byte getNum_cars() {
-		return num_cars;
+	public byte getNumCars() {
+		return numCars;
 	}
 
-	public void setNum_cars(byte num_cars) {
-		this.num_cars = num_cars;
+	public void setNumCars(byte numCars) {
+		this.numCars = numCars;
 	}
 
 	public byte getLimit() {
@@ -66,7 +66,7 @@ public class GameSettings {
 		if (trackname.length == this.trackname.length) {
 			this.trackname = trackname;
 		} else {
-			Arrays.fill(this.trackname, (byte)0);
+			Arrays.fill(this.trackname, (byte) 0);
 			System.arraycopy(trackname, 0, this.trackname, 0, Math.min(trackname.length, this.trackname.length));
 		}
 	}

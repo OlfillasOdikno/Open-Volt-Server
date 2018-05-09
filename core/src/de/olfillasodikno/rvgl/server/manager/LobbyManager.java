@@ -1,6 +1,7 @@
 package de.olfillasodikno.rvgl.server.manager;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import de.olfillasodikno.rvgl.server.Server;
 import de.olfillasodikno.rvgl.server.structures.GameSettings;
@@ -11,14 +12,14 @@ public class LobbyManager {
 
 	private Lobby hub;
 	
-	private HashMap<String,Lobby> lobbies;
+	private Map<String,Lobby> lobbies;
 	private final Server server;
 	public LobbyManager(Server server) {
 		lobbies = new HashMap<>();
 		this.server = server;
 		hub = new Lobby(server);
 		GameSettings hubSettings = hub.getSettings();
-		hubSettings.setNum_cars((byte) 127);
+		hubSettings.setNumCars((byte) 127);
 	}
 		
 	public Lobby getHub() {
@@ -47,7 +48,7 @@ public class LobbyManager {
 		return lobbies.get(code);
 	}
 	
-	public HashMap<String, Lobby> getLobbies() {
+	public Map<String, Lobby> getLobbies() {
 		return lobbies;
 	}
 }

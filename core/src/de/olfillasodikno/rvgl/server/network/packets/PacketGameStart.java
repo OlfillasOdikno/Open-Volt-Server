@@ -30,7 +30,7 @@ public class PacketGameStart implements Packet {
 		
 		buf.putInt(game.getSettings().isPickups() ? 1:0); //Pickups
 
-		buf.putInt(game.getSettings().getNum_cars()); //NUM CARS?		
+		buf.putInt(game.getSettings().getNumCars()); //NUM CARS?		
 
 		
 		buf.putInt(game.getSettings().getDifficulty()); //IDK?		

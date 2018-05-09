@@ -1,6 +1,7 @@
 package de.olfillasodikno.rvgl.server.structures;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.olfillasodikno.rvgl.server.Server;
 import de.olfillasodikno.rvgl.server.events.PlayerJoinLobbyEvent;
@@ -12,7 +13,7 @@ import de.olfillasodikno.rvgl.server.network.packets.PacketRequestPlayerId;
 
 public class Lobby {
 
-	private ArrayList<Player> players;
+	private List<Player> players;
 
 	private Player owner;
 
@@ -45,7 +46,7 @@ public class Lobby {
 		return owner;
 	}
 
-	public ArrayList<Player> getPlayers() {
+	public List<Player> getPlayers() {
 		return players;
 	}
 
@@ -78,11 +79,11 @@ public class Lobby {
 
 				// PacketPlayerAdddress addrOut = new PacketPlayerAdddress(p);
 
-				player.sendPacket(outPacket, false);
+				player.sendPacket(outPacket);
 				// player.sendPacket(addrOut, false);
 				if (p.getData() != null && p.getData().getCarData() != null) {
 					PacketPlayerData otherData = new PacketPlayerData(p);
-					player.sendPacket(otherData, false);
+					player.sendPacket(otherData);
 				}
 			}
 
@@ -142,11 +143,11 @@ public class Lobby {
 			if (exclude && p == sender) {
 				continue;
 			}
-			p.sendPacket(pkt, false);
+			p.sendPacket(pkt);
 		}
 	}
 
 	public boolean isFull() {
-		return players.size() >= settings.getNum_cars();
+		return players.size() >= settings.getNumCars();
 	}
 }

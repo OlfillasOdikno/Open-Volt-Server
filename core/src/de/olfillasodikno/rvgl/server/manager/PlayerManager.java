@@ -52,16 +52,14 @@ public class PlayerManager {
 			player.setPeer(peer);
 			peerMap.put(peer.getHandle(), player);
 		}
-		Player player = peerMap.get(peer.getHandle());
-		return player;
+		return peerMap.get(peer.getHandle());
 	}
 
 	public Player getPlayer(long peerHandle) {
 		if (!peerMap.containsKey(peerHandle)) {
 			return null;
 		}
-		Player player = peerMap.get(peerHandle);
-		return player;
+		return peerMap.get(peerHandle);
 	}
 
 	public void removePlayer(Player p) {

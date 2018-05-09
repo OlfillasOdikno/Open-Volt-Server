@@ -6,8 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Command {
+	
+	private static final Logger logger = Logger.getLogger(Command.class.getName());
 	
 	private final Method method;
 	private final Plugin module;
@@ -40,7 +44,7 @@ public class Command {
 			}
 			return "["+info.name()+"] executed Command";
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 			return "["+info.name()+"] Failed to execute Command";
 		}
 	}

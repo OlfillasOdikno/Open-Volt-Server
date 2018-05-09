@@ -1,13 +1,12 @@
 package de.olfillasodikno.rvgl.server.structures;
 
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 public interface Packet {
 
 	public void encode(ByteBuffer buf);
 
-	public void decode(ByteBuffer buf) throws BufferUnderflowException;
+	public void decode(ByteBuffer buf);
 
 	public default void setSubID(short id) {
 	}

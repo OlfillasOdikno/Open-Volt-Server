@@ -11,8 +11,7 @@ public interface Hashable {
 
 	public static int hash(Class<?> clazz){
 		URL url = clazz.getResource(clazz.getSimpleName() + ".class");
-		try {
-			InputStream is = url.openStream();
+		try (InputStream is = url.openStream()) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			int r;
 			byte[] buffer = new byte[1024];

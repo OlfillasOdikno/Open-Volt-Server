@@ -1,14 +1,18 @@
 package de.olfillasodikno.rvgl.server.structures;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.olfillasodikno.rvgl.server.Server;
 
 public abstract class Plugin {
+	
+	private static final Logger logger = Logger.getLogger(Plugin.class.getName());
 
 	private Server server;
 
-	private ArrayList<Command> commands;
+	private List<Command> commands;
 
 	private PluginConfig config;
 
@@ -36,20 +40,20 @@ public abstract class Plugin {
 		this.config = config;
 	}
 
-	public void setCommands(ArrayList<Command> commands) {
+	public void setCommands(List<Command> commands) {
 		this.commands = commands;
 	}
 
-	public ArrayList<Command> getCommands() {
+	public List<Command> getCommands() {
 		return commands;
 	}
 
 	public void log(String msg) {
-		System.out.println("[" + config.name + "] " + msg);
+		logger.log(Level.INFO,"[" + config.getName() + "] {0}", msg);
 	}
 
 	public void error(String msg) {
-		System.err.println("[" + config.name + "] " + msg);
+		logger.log(Level.INFO,"[" + config.getName() + "] {0}", msg);
 	}
 
 }

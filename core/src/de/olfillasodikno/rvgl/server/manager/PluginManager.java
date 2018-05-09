@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.olfillasodikno.rvgl.server.Constants;
 import de.olfillasodikno.rvgl.server.Server;
@@ -14,16 +17,17 @@ import de.olfillasodikno.rvgl.server.structures.Plugin;
 import de.olfillasodikno.rvgl.server.structures.PluginConfig;
 
 public class PluginManager {
+	private static final Logger logger = Logger.getLogger(PluginManager.class.getName());
 
 	private final HashMap<String, Command> cmds;
 
-	private final HashMap<Class<? extends Plugin>, Plugin> instances_map;
+	private final HashMap<Class<? extends Plugin>, Plugin> instancesMap;
 
 	private final Server server;
 
 	public PluginManager(Server server) {
 		this.cmds = new HashMap<>();
-		this.instances_map = new HashMap<>();
+		this.instancesMap = new HashMap<>();
 		this.server = server;
 	}
 
@@ -54,7 +58,7 @@ public class PluginManager {
 	}
 
 	public Plugin unregisterPlugin(Class<? extends Plugin> plugin) {
-		Plugin instance = instances_map.remove(plugin);
+		Plugin instance = instancesMap.remove(plugin);
 		if (instance != null) {
 			unregisterPlugin(instance);
 		}
@@ -64,14 +68,14 @@ public class PluginManager {
 	public void unregisterPlugin(Plugin instance) {
 		instance.onDisable();
 		instance.log("Disabled");
-		ArrayList<Command> commands = instance.getCommands();
+		List<Command> commands = instance.getCommands();
 		for (Command cmd : commands) {
 			cmds.remove(cmd.getInfo().name());
 		}
 		server.getEventHandler().unregisterListener(instance);
 	}
 
-	public Plugin registerPlugin(Class<? extends Plugin> plugin) throws Exception {
+	public Plugin registerPlugin(Class<? extends Plugin> plugin) throws InstantiationException, IllegalAccessException {
 		return registerPlugin(plugin, null);
 	}
 
@@ -87,18 +91,18 @@ public class PluginManager {
 		try {
 			registerPlugin(plugin, config);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage(), e.getCause());
 		}
 	}
 
 	public void reloadAll(boolean reloadConfig) {
-		Collection<Plugin> instances = instances_map.values();
+		Collection<Plugin> instances = instancesMap.values();
 		ArrayList<Plugin> old = new ArrayList<>();
 		for (Plugin instance : instances) {
 			unregisterPlugin(instance);
 			old.add(instance);
 		}
-		instances_map.clear();
+		instancesMap.clear();
 		for (Plugin instance : old) {
 			try {
 				PluginConfig config = instance.getPluginConfig();
@@ -107,13 +111,14 @@ public class PluginManager {
 				}
 				registerPlugin(instance.getClass(), config);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.log(Level.WARNING, e.getMessage(), e.getCause());
 			}
 		}
 		old.clear();
 	}
 
-	public Plugin registerPlugin(Class<? extends Plugin> plugin, PluginConfig config) throws Exception {
+	public Plugin registerPlugin(Class<? extends Plugin> plugin, PluginConfig config)
+			throws InstantiationException, IllegalAccessException {
 		Plugin instance = plugin.newInstance();
 		if (config != null) {
 			instance.setPluginConfig(config);
@@ -126,7 +131,7 @@ public class PluginManager {
 			}
 		}
 		instance.setCommands(commands);
-		instances_map.put(plugin, instance);
+		instancesMap.put(plugin, instance);
 		server.getEventHandler().registerListener(instance);
 		instance.onEnable();
 		instance.log("Enabled");
