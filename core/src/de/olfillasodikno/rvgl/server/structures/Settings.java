@@ -7,6 +7,7 @@ public class Settings implements Hashable{
 
 	private short port = Constants.DEFAULT_PORT;
 	private int maxPlayers = Constants.DEFAULT_MAX_PLAYERS;
+	private int refreshRate = Constants.DEFAULT_REFERSH_RATE;
 	
 	private String pluginDir = "plugins";
 	
@@ -47,5 +48,11 @@ public class Settings implements Hashable{
 		this.pluginDir = pluginDir;
 	}
 	
+	public int getRefreshRate() {
+		return refreshRate;
+	}
 	
+	public void setRefreshRate(int refreshRate) {
+		this.refreshRate = refreshRate;
+	}
 }

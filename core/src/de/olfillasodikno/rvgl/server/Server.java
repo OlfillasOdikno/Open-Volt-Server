@@ -54,6 +54,8 @@ public class Server implements Runnable {
 		mainLogger.addHandler(cHandler);
 	}
 
+	private float refreshRate;
+
 	private DataHandler<EnetEvent, byte[], Packet> handler;
 
 	private boolean running;
@@ -61,7 +63,7 @@ public class Server implements Runnable {
 
 	private short port;
 
-	private long startMs;
+	private long startNs;
 
 	private EnetInstance enetServer;
 
@@ -96,12 +98,13 @@ public class Server implements Runnable {
 	private void init() {
 		registerPlugins();
 		fileManager.init();
+		this.refreshRate = 1_000_000_000L / settings.getRefreshRate();
 		this.port = settings.getPort();
 	}
 
 	public void create() {
 		try {
-			enetServer = Enet.createServer(port);
+			enetServer = Enet.createServer(port, "localhost");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
@@ -119,7 +122,8 @@ public class Server implements Runnable {
 			return;
 		}
 		log("Starting server..");
-		startMs = System.nanoTime();
+		startNs = System.nanoTime();
+		long lastNs = getLastNS();
 		while (running) {
 			ev = Enet.service(enetServer);
 			if (ev == null || ev.getData() == null) {
@@ -130,6 +134,10 @@ public class Server implements Runnable {
 			} catch (InstantiationException | IllegalAccessException e) {
 				logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 			}
+			while(getLastNS()-lastNs < refreshRate) {
+				//Idle
+			}
+			lastNs = getLastNS();
 		}
 		Enet.destroyServer(enetServer);
 		Enet.clean();
@@ -138,7 +146,7 @@ public class Server implements Runnable {
 	}
 
 	public long getLastNS() {
-		return System.nanoTime() - startMs;
+		return System.nanoTime() - startNs;
 	}
 
 	public void sendPacket(Peer peer, Packet pkt) {
@@ -217,7 +225,7 @@ public class Server implements Runnable {
 		LogUtils.log(logger, Level.SEVERE, LOG_NAME, msg, args);
 	}
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Server server = new Server();
 
 		server.setHandler(new PacketHandler(server));
