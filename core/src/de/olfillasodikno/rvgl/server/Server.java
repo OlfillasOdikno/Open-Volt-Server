@@ -3,8 +3,13 @@ package de.olfillasodikno.rvgl.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import de.olfillasodikno.libenet.Enet;
 import de.olfillasodikno.libenet.EnetEvent;
@@ -23,10 +28,31 @@ import de.olfillasodikno.rvgl.server.plugins.ReloadPlugin;
 import de.olfillasodikno.rvgl.server.structures.AbstractEvent;
 import de.olfillasodikno.rvgl.server.structures.Packet;
 import de.olfillasodikno.rvgl.server.structures.Settings;
+import de.olfillasodikno.rvgl.server.utils.LogUtils;
 
 public class Server implements Runnable {
+	private static final String LOG_NAME = "Server";
 
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
+	static {
+		Logger mainLogger = Logger.getLogger("de.olfillasodikno.");
+		mainLogger.setUseParentHandlers(false);
+		ConsoleHandler cHandler = new ConsoleHandler();
+		cHandler.setFormatter(new SimpleFormatter() {
+			private static final String FORMAT = "[%1$tF %1$tT] %2$s %n";
+
+			@Override
+			public synchronized String format(LogRecord record) {
+				String msg = record.getMessage();
+				if (record.getParameters() != null) {
+					MessageFormat msgFormat = new MessageFormat(msg);
+					msg = msgFormat.format(record.getParameters());
+				}
+				return String.format(FORMAT, new Date(record.getMillis()), msg);
+			}
+		});
+		mainLogger.addHandler(cHandler);
+	}
 
 	private DataHandler<EnetEvent, byte[], Packet> handler;
 
@@ -74,7 +100,11 @@ public class Server implements Runnable {
 	}
 
 	public void create() {
-		enetServer = Enet.createServer(port);
+		try {
+			enetServer = Enet.createServer(port);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
+		}
 	}
 
 	@Override
@@ -84,7 +114,8 @@ public class Server implements Runnable {
 		if (handler == null) {
 			return;
 		}
-		if (enetServer == null) {
+		if (enetServer == null || enetServer.getHostHandle() == 0) {
+			error("Failed to start Server (maybe port is already in use?)");
 			return;
 		}
 		log("Starting server..");
@@ -178,15 +209,15 @@ public class Server implements Runnable {
 		}
 	}
 
-	public void log(String msg) {
-		logger.log(Level.INFO, "[Server] {0}", msg);
+	public void log(String msg, Object... args) {
+		LogUtils.log(logger, Level.INFO, LOG_NAME, msg, args);
 	}
 
-	public void error(String msg) {
-		logger.log(Level.SEVERE, "[Server] {0}", msg);
+	public void error(String msg, Object... args) {
+		LogUtils.log(logger, Level.SEVERE, LOG_NAME, msg, args);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		Server server = new Server();
 
 		server.setHandler(new PacketHandler(server));

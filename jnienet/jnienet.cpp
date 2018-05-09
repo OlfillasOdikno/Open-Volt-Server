@@ -32,12 +32,7 @@ JNIEXPORT jlong JNICALL Java_de_olfillasodikno_libenet_Enet_enet_1host_1create(J
 
 	const char *nativeString = (env)->GetStringUTFChars(host, 0);
 
-	if (nativeString == "0") {
-		address.host = ENET_HOST_ANY;
-	}
-	else {
-		enet_address_set_host(&address, nativeString);
-	}
+	enet_address_set_host(&address, nativeString);
 
 	address.port = port;
 	(env)->ReleaseStringUTFChars(host,nativeString);

@@ -1,5 +1,8 @@
 package de.olfillasodikno.libenet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class Enet {
 
 	static {
@@ -13,9 +16,11 @@ public class Enet {
 		long handle = enet_host_create("", (short)0, 1, 2, 57600 / 8, 14400 / 8);
 		return new EnetInstance(handle);
 	}
-	
-	public static EnetInstance createServer(short port) {
-		long handle = enet_host_create("0", port, 100, 0, 57600 / 8, 14400 / 8);
+	public static EnetInstance createServer(short port) throws UnknownHostException {
+		return createServer(port,InetAddress.getLocalHost().getHostAddress());
+	}
+	public static EnetInstance createServer(short port, String ip) {
+		long handle = enet_host_create(ip, port, 100, 0, 57600 / 8, 14400 / 8);
 		return new EnetInstance(handle);
 	}
 	

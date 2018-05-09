@@ -30,8 +30,12 @@ import de.olfillasodikno.rvgl.server.Server;
 import de.olfillasodikno.rvgl.server.structures.Plugin;
 import de.olfillasodikno.rvgl.server.structures.PluginConfig;
 import de.olfillasodikno.rvgl.server.structures.Settings;
+import de.olfillasodikno.rvgl.server.utils.LogUtils;
 
 public class FileManager {
+
+	private static final String LOG_NAME = "FileManager";
+
 	private static final Logger logger = Logger.getLogger(FileManager.class.getName());
 
 	public static final Gson gson = new Gson();
@@ -61,7 +65,7 @@ public class FileManager {
 	}
 
 	private void loadPlugins() {
-		logger.info("Loading External Plugins..");
+		LogUtils.log(logger, Level.INFO, LOG_NAME, "Loading External Plugins..");
 		Settings serverSettings = server.getSettings();
 		File pluginDir = new File(serverSettings.getPluginDir());
 		if (!pluginDir.exists()) {
@@ -80,16 +84,16 @@ public class FileManager {
 					PluginConfig config = loadConfig(jarFile, plguinConfig, pluginDir, buf, file);
 					boolean ret = loadPlugin(config, jarFile, file);
 					if (!ret) {
-						logger.log(Level.SEVERE,"Failed to load Plugin: {0}", file.getName());
+						LogUtils.log(logger, Level.SEVERE, LOG_NAME, "Failed to load Plugin: {0}", file.getName());
 					}
 				}
 				jarFile.close();
 			} catch (IOException e) {
-				logger.log(Level.SEVERE,e.getMessage(), e.getCause());
+				logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 			}
 
 		}
-		logger.info("Finished Loading External Plugins!");
+		LogUtils.log(logger, Level.INFO, LOG_NAME, "Finished Loading External Plugins!");
 	}
 
 	public PluginConfig reloadConfig(PluginConfig config) {
@@ -107,7 +111,7 @@ public class FileManager {
 			}
 			jarFile.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
 		return null;
 	}
@@ -165,7 +169,7 @@ public class FileManager {
 			}
 			return false;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
 		return false;
 	}
@@ -179,7 +183,7 @@ public class FileManager {
 			server.setSettings(loadedSettings);
 			return true;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 			return false;
 		}
 	}
@@ -189,7 +193,7 @@ public class FileManager {
 			Settings savedSettings = server.getSettings();
 			save.println(prettyGson.toJson(savedSettings));
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,e.getMessage(), e.getCause());
+			logger.log(Level.SEVERE, e.getMessage(), e.getCause());
 		}
 	}
 }

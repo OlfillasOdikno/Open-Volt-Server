@@ -5,9 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.olfillasodikno.rvgl.server.Server;
+import de.olfillasodikno.rvgl.server.utils.LogUtils;
 
 public abstract class Plugin {
-	
+
 	private static final Logger logger = Logger.getLogger(Plugin.class.getName());
 
 	private Server server;
@@ -48,12 +49,12 @@ public abstract class Plugin {
 		return commands;
 	}
 
-	public void log(String msg) {
-		logger.log(Level.INFO,"[" + config.getName() + "] {0}", msg);
+	public void log(String msg, Object... args) {
+		LogUtils.log(logger, Level.INFO, getPluginConfig().getName(), msg, args);
 	}
 
-	public void error(String msg) {
-		logger.log(Level.INFO,"[" + config.getName() + "] {0}", msg);
+	public void error(String msg, Object... args) {
+		LogUtils.log(logger, Level.SEVERE, getPluginConfig().getName(), msg, args);
 	}
 
 }
